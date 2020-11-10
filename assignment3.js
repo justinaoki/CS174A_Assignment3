@@ -18,20 +18,31 @@ export class Assignment3 extends Scene {
             // TODO:  Fill in as many additional shape instances as needed in this key/value table.
             //        (Requirement 1)
             planet: new (defs.Subdivision_Sphere.prototype.make_flat_shaded_version())(2),
+            planet2: new defs.Subdivision_Sphere(3),
+            planet3: new defs.Subdivision_Sphere(4),
+            planet4: new defs.Subdivision_Sphere(4),
+            moon: new (defs.Subdivision_Sphere.prototype.make_flat_shaded_version())(1),
         };
 
         // *** Materials
         this.materials = {
             //keeping material for each planet/object
             sun: new Material(new defs.Phong_Shader(),
-                {ambient: 1, diffusivity: .6, color: hex_color("#ffffff")}),
+                {ambient: 1, diffusivity: 1, color: hex_color("#ffffff")}),
             test2: new Material(new Gouraud_Shader(),
                 {ambient: .4, diffusivity: .6, color: hex_color("#992828")}),
             ring: new Material(new Ring_Shader()),
             // TODO:  Fill in as many additional material objects as needed in this key/value table.
             //        (Requirement 4)
             planet1: new Material(new defs.Phong_Shader(),
-                {ambient: 0, diffusivity: 1, specularity: 0, color: color(.5,.5,.5,1)})
+                {ambient: 0, diffusivity: 1, specularity: 0, color: color(.5,.5,.5,1)}),
+            planet2: new Material(new defs.Phong_Shader(),
+                {ambient: 0.5, diffusivity: .3, specularity: 1, color: color(.5,1,1,1)}),
+            planet3: new Material(new defs.Phong_Shader(),
+                {ambient: 0.5, diffusivity: 1, specularity: 1, color: color(.6,.4,0,1)}),
+            planet4: new Material(new defs.Phong_Shader(),
+                {ambient: 0.5, diffusivity: 1, specularity: 1, color: color(.3,.5,1,1)}),
+
         }
 
         this.initial_camera_location = Mat4.look_at(vec3(0, 10, 20), vec3(0, 0, 0), vec3(0, 1, 0));
@@ -47,7 +58,7 @@ export class Assignment3 extends Scene {
         this.key_triggered_button("Attach to planet 3", ["Control", "3"], () => this.attached = () => this.planet_3);
         this.key_triggered_button("Attach to planet 4", ["Control", "4"], () => this.attached = () => this.planet_4);
         this.new_line();
-        this.key_triggered_button("Attach to planet 5", ["Control", "5"], () => this.attached = () => this.planet_5);
+        //this.key_triggered_button("Attach to planet 5", ["Control", "5"], () => this.attached = () => this.planet_5);
         this.key_triggered_button("Attach to moon", ["Control", "m"], () => this.attached = () => this.moon);
     }
 
@@ -80,28 +91,41 @@ export class Assignment3 extends Scene {
         this.shapes.sphere.draw(context, program_state, sun_transform, this.materials.sun.override({color: sun_color}));
 
         //planet1
-        let planet1_transform = model_transform
+        this.planet_1 = model_transform
             .times(Mat4.rotation(angle, 0, 1, 0)) //rotate around y axis of sun (origin)
             .times(Mat4.translation(5,0,0)); //translate planet 5 units away from sun
-        this.shapes.planet.draw(context, program_state, planet1_transform, this.materials.planet1);
+        this.shapes.planet.draw(context, program_state, this.planet_1, this.materials.planet1);
 
         //planet2
-        let planet2_transform = model_transform
+        this.planet_2 = model_transform
             .times(Mat4.rotation(angle/2, 0, 1, 0)) //rotate around y axis of sun (origin)
             .times(Mat4.translation(8,0,0)); //translate planet 5 units away from sun
-        this.shapes.planet.draw(context, program_state, planet2_transform, this.materials.test2);
+        this.shapes.planet2.draw(context, program_state, this.planet_2, this.materials.planet2);
 
         //planet3
-        let planet3_transform = model_transform
+        this.planet_3 = model_transform
             .times(Mat4.rotation(angle/3, 0, 1, 0)) //rotate around y axis of sun (origin)
-            .times(Mat4.translation(11,0,0)); //translate planet 5 units away from sun
-        this.shapes.planet.draw(context, program_state, planet3_transform, this.materials.test2);
+            .times(Mat4.translation(11,0,0))
+            .times(Mat4.rotation(.5, 1, 0, 0)); //translate planet 5 units away from sun
 
-        //planet4
-        let planet4_transform = model_transform
+        const ring = this.planet_3.times(Mat4.scale(2.5, 2.5, 1));
+        this.shapes.torus.draw(context, program_state, ring, this.materials.planet3);
+
+        this.planet_3 = this.planet_3.times(Mat4.scale(0.7, 0.7, 0.7));
+        this.shapes.planet3.draw(context, program_state, this.planet_3, this.materials.planet3);
+
+        //planet4 and moon
+        this.planet_4 = model_transform
             .times(Mat4.rotation(angle/4, 0, 1, 0)) //rotate around y axis of sun (origin)
             .times(Mat4.translation(14,0,0)); //translate planet 5 units away from sun
-        this.shapes.planet.draw(context, program_state, planet4_transform, this.materials.test2);
+        const moon = this.planet_4
+                .times(Mat4.rotation(angle/2, 0, 1, 0))
+                .times(Mat4.translation(2, 0, 0));
+        this.shapes.planet4.draw(context, program_state, this.planet_4, this.materials.planet4);
+        this.shapes.moon.draw(context, program_state, moon, this.materials.planet4);
+
+        if(this.attached)
+            program_state.set_camera(Mat4.inverse(this.attached().times(Mat4.translation(0,0,5)))); //using z to step back out of screen
     }
 }
 
