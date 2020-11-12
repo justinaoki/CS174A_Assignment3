@@ -37,7 +37,7 @@ export class Assignment3 extends Scene {
             planet1: new Material(new defs.Phong_Shader(),
                 {ambient: 0, diffusivity: 1, specularity: 0, color: color(.5,.5,.5,1)}),
             planet2: new Material(new defs.Phong_Shader(),
-                {ambient: 0, diffusivity: .3, specularity: 1, color: color(.5,1,1,1)}),
+                {ambient: 0, diffusivity: .3, specularity: 1, color: color(.5,1,.9,1)}),
             planet2_Gouraud: new Material(new Gouraud_Shader(),
                 {ambient: 0, diffusivity: .3, specularity: 1, color: color(.5,1,1,1)}),
             planet3: new Material(new defs.Phong_Shader(),
