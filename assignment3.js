@@ -121,7 +121,7 @@ export class Assignment3 extends Scene {
 
         this.shapes.planet3.draw(context, program_state, this.planet_3, this.materials.planet3);
 
-        const ring = this.planet_3.times(Mat4.scale(3.5, 3.5, .5));
+        const ring = this.planet_3.times(Mat4.scale(3.5, 3.5, .3));
         this.shapes.torus.draw(context, program_state, ring, this.materials.planet3_rings);
 
         //planet4 and moon
